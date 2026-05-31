@@ -18,8 +18,8 @@ from functools import lru_cache
 from groq import Groq
 from sqlalchemy.orm import Session
 
-from backend.config import get_settings
-from backend.models.db_models import Booking
+from config import get_settings
+from models.db_models import Booking
 
 settings = get_settings()
 

@@ -1,6 +1,6 @@
 # from functools import lru_cache
 # from sentence_transformers import SentenceTransformer
-# from backend.config import get_settings
+# from config import get_settings
 
 # settings = get_settings()
 
@@ -43,7 +43,7 @@ from functools import lru_cache
 # from sentence_transformers import SentenceTransformer
 
 from fastembed import TextEmbedding
-from backend.config import get_settings
+from config import get_settings
 
 settings = get_settings()
 

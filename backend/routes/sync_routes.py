@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from backend.database import get_db
-from backend.models.schemas import SyncReport
-from backend.services.sync_service import run_incremental_sync
+from database import get_db
+from models.schemas import SyncReport
+from services.sync_service import run_incremental_sync
 
 router = APIRouter(tags=["Sync"])
 

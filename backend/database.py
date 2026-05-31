@@ -5,7 +5,7 @@ from sqlalchemy import create_engine, event, inspect, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
-from backend.config import get_settings
+from config import get_settings
 
 
 # ─────────────────────────────────────────────────────────────

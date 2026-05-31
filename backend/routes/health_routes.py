@@ -1,9 +1,9 @@
 from fastapi import APIRouter
-from backend.services.pinecone_service import get_pinecone_service
-from backend.services.embedding_service import get_embedding_service
-from backend.models.schemas import HealthResponse
-from backend.config import get_settings
-from backend.database import SessionLocal
+from services.pinecone_service import get_pinecone_service
+from services.embedding_service import get_embedding_service
+from models.schemas import HealthResponse
+from config import get_settings
+from database import SessionLocal
 
 router   = APIRouter(tags=["Health"])
 settings = get_settings()

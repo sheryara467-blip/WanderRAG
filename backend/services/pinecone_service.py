@@ -1,6 +1,6 @@
 from functools import lru_cache
 from pinecone import Pinecone, ServerlessSpec
-from backend.config import get_settings
+from config import get_settings
 
 settings = get_settings()
 

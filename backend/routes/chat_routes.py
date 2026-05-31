@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from backend.database import get_db
-from backend.models.schemas import ChatRequest, ChatResponse
-from backend.services.rag_pipeline import run_rag_pipeline
+from database import get_db
+from models.schemas import ChatRequest, ChatResponse
+from services.rag_pipeline import run_rag_pipeline
 
 router = APIRouter(tags=["Chat"])
 

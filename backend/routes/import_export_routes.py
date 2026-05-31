@@ -3,8 +3,8 @@ from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
-from backend.database import get_db
-from backend.services.csv_service import import_csv, export_csv
+from database import get_db
+from services.csv_service import import_csv, export_csv
 
 router = APIRouter(tags=["CSV Import / Export"])
 

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
-from backend.models.db_models import Place, TourPackage
-from backend.services.embedding_service import get_embedding_service
-from backend.services.pinecone_service import get_pinecone_service
+from models.db_models import Place, TourPackage
+from services.embedding_service import get_embedding_service
+from services.pinecone_service import get_pinecone_service
 
 
 def retrieve_relevant_records(query: str, db: Session, top_k: int = 5) -> dict:
