@@ -14,9 +14,9 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from database import get_db
-from models.db_models import Booking
-from models.schemas import (
+from backend.database import get_db
+from backend.models.db_models import Booking
+from backend.models.schemas import (
     BookingAgentRequest, BookingAgentResponse,
     BookingCreate, BookingOut, BookingStatusUpdate,
 )

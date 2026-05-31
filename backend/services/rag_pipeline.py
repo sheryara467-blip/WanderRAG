@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
-from services.retrieval_service import retrieve_relevant_records
-from services.llm_service import build_context, generate_answer
-from models.schemas import ChatResponse, SourceCard
+from backend.services.retrieval_service import retrieve_relevant_records
+from backend.services.llm_service import build_context, generate_answer
+from backend.models.schemas import ChatResponse, SourceCard
 
 
 def run_rag_pipeline(query: str, db: Session, top_k: int = 5) -> ChatResponse:

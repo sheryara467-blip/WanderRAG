@@ -4,9 +4,9 @@ import time
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 
-from models.db_models import Place, TourPackage, RecordHash
-from services.embedding_service import get_embedding_service
-from services.pinecone_service import get_pinecone_service
+from backend.models.db_models import Place, TourPackage, RecordHash
+from backend.services.embedding_service import get_embedding_service
+from backend.services.pinecone_service import get_pinecone_service
 
 
 # ===========================================================================

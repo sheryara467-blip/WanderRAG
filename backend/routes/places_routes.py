@@ -2,9 +2,9 @@ import re
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
-from database import get_db
-from models.db_models import Place
-from models.schemas import PlaceCreate, PlaceUpdate, PlaceOut
+from backend.database import get_db
+from backend.models.db_models import Place
+from backend.models.schemas import PlaceCreate, PlaceUpdate, PlaceOut
 
 router = APIRouter(tags=["Places"])
 

@@ -14,7 +14,7 @@ import pandas as pd
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 
-from models.db_models import Place
+from backend.models.db_models import Place
 
 
 def _utcnow():

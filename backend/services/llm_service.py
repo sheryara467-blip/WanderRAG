@@ -1,6 +1,6 @@
 from groq import Groq
-from config import get_settings
-from models.db_models import Place, TourPackage
+from backend.config import get_settings
+from backend.models.db_models import Place, TourPackage
 
 settings = get_settings()
 _client  = None   # lazy init to avoid loading at import time

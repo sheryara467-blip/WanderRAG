@@ -14,17 +14,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from config import get_settings
-from database import init_db
-from services.embedding_service import get_embedding_service
-from services.pinecone_service import get_pinecone_service
+from backend.config import get_settings
+from backend.database import init_db
+from backend.services.embedding_service import get_embedding_service
+from backend.services.pinecone_service import get_pinecone_service
 
-from routes.health_routes import router as health_router
-from routes.chat_routes   import router as chat_router
-from routes.places_routes import router as places_router
-from routes.sync_routes   import router as sync_router
-from routes.admin_routes  import router as admin_router
-from routes.booking_routes import router as booking_router
+from backend.routes.health_routes import router as health_router
+from backend.routes.chat_routes   import router as chat_router
+from backend.routes.places_routes import router as places_router
+from backend.routes.sync_routes   import router as sync_router
+from backend.routes.admin_routes  import router as admin_router
+from backend.routes.booking_routes import router as booking_router
 settings = get_settings()
 
 # ---------------------------------------------------------------------------
