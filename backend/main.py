@@ -1,3 +1,11 @@
+import sys
+from pathlib import Path
+
+# Render par Python ko backend/ folder ka path batao
+# taake models, routes, services sab mil sakein
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+
 from contextlib import asynccontextmanager
 from pathlib import Path
 
