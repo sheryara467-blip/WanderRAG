@@ -43,7 +43,7 @@ logs/
 
 # ── Sentence Transformers Cache ───────────────────────────
 .cache/
-models/
+.cache/models/
 
 # ── Python Distribution ───────────────────────────────────
 dist/
