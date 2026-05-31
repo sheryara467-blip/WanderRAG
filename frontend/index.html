@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WanderRAG PK - AI Tourism Assistant</title>
+  <link rel="stylesheet" href="/css/tourist.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="WanderRAG home">
+      <span class="brand-mark">WR</span>
+      <span class="brand-name">Wander<span>RAG</span></span>
+      <small>PK</small>
+    </a>
+
+    <nav class="top-actions" aria-label="Main navigation">
+      <a href="/admin" class="admin-link">Admin</a>
+      <div class="status-pill">
+        <span id="status-dot" class="status-dot"></span>
+        <span id="status-txt">Checking system</span>
+      </div>
+    </nav>
+  </header>
+
+  <main class="page-shell">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">AI tourism guide for Pakistan</p>
+        <h1>Plan smarter trips with verified local travel data.</h1>
+        <p>
+          Ask about landmarks, routes, entry fees, opening hours, travel
+          seasons, and tour packages. WanderRAG searches your tourism data
+          before it answers.
+        </p>
+        <div class="hero-chips">
+          <button type="button" data-q="Historical places in Lahore">Historical Lahore</button>
+          <button type="button" data-q="Best trekking spots in northern Pakistan">Northern treks</button>
+          <button type="button" data-q="Free tourist attractions in Pakistan">Free attractions</button>
+          <button type="button" data-q="Best time to visit Hunza">Hunza season</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <section class="chat-card" aria-label="Tourism chat">
+        <div class="panel-title">
+          <div>
+            <span class="section-kicker">Ask WanderRAG</span>
+            <h2>Tourism Assistant</h2>
+          </div>
+          <span class="data-label">Pinecone + Groq</span>
+        </div>
+
+        <div id="chat-messages" class="messages" role="log" aria-live="polite"></div>
+
+        <form id="chat-form" class="composer">
+          <div id="suggestions" class="suggestions">
+            <button type="button" data-q="What are historical places in Lahore?">Historical Lahore</button>
+            <button type="button" data-q="Tell me about Lahore Fort">Lahore Fort details</button>
+            <button type="button" data-q="What places are free to visit?">Free places</button>
+            <button type="button" data-q="Suggest a northern Pakistan tour package">Tour package</button>
+          </div>
+          <div class="input-wrap">
+            <input
+              id="chat-input"
+              type="text"
+              autocomplete="off"
+              maxlength="500"
+              placeholder="Ask about destinations, prices, seasons, or packages..."
+            />
+            <button id="send-btn" type="submit">Send</button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="travel-rail" aria-label="Retrieved places">
+        <div class="rail-card">
+          <span class="section-kicker">Retrieved Places</span>
+          <h2>Best Matches</h2>
+          <div id="sidebar-places" class="rail-list">
+            <div class="empty-state">
+              <strong>No query yet</strong>
+              <p>Ask a travel question and matching places will appear here.</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <div id="booking-overlay" class="booking-overlay" aria-hidden="true">
+    <section class="booking-panel" role="dialog" aria-modal="true" aria-labelledby="booking-title">
+      <header class="booking-header">
+        <div>
+          <span class="section-kicker">Booking Assistant</span>
+          <h2 id="booking-title">Book Your Trip</h2>
+          <p id="booking-place">Select a destination</p>
+        </div>
+        <button id="booking-close" class="icon-button" type="button" aria-label="Close booking">Close</button>
+      </header>
+
+      <div id="booking-steps" class="booking-steps">
+        <span data-step="collecting_name">Name</span>
+        <span data-step="collecting_phone">Phone</span>
+        <span data-step="collecting_date">Date</span>
+        <span data-step="collecting_people">People</span>
+        <span data-step="confirming">Confirm</span>
+      </div>
+
+      <div id="booking-messages" class="booking-messages"></div>
+
+      <form id="booking-form" class="booking-form">
+        <input id="booking-input" type="text" autocomplete="off" maxlength="500" placeholder="Type your reply..." />
+        <button id="booking-send" type="submit">Send</button>
+      </form>
+    </section>
+  </div>
+
+  <script src="/js/tourist.js"></script>
+</body>
+</html>

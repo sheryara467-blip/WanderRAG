@@ -1,0 +1,57 @@
+# ── Python ────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.so
+
+# ── Virtual Environment ───────────────────────────────────
+venv/
+env/
+.env
+.venv/
+ENV/
+
+# ── Database (SQLite - local only) ────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+backend/data/app.db
+
+# ── Environment Variables (NEVER commit API keys) ─────────
+.env
+.env.local
+.env.production
+backend/.env
+
+# ── OS Files ──────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+Thumbs.db
+desktop.ini
+
+# ── IDE Files ─────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Logs ──────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Sentence Transformers Cache ───────────────────────────
+.cache/
+models/
+
+# ── Python Distribution ───────────────────────────────────
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# ── Pytest ────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/

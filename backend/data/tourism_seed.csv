@@ -1,0 +1,5 @@
+id, name, city, province, category,description, history,entry_fee, opening_hours,best_time_to_visit, tags
+1,Lahore Fort,Lahore,Punjab,Historical,A UNESCO World Heritage site in Lahore,Originally built during Mughal era,Free for locals,9AM-5PM,Winter,fort mughal lahore
+2,Badshahi Mosque,Lahore,Punjab,Religious,One of the largest mosques in the world,Built by Aurangzeb in 1673,Free,9AM-8PM,All year,mosque lahore mughal
+3,Shalimar Gardens,Lahore,Punjab,Garden,Historic Mughal garden,Constructed by Shah Jahan,PKR 20,8AM-6PM,Spring,garden lahore mughal
+5,Faisal Mosque,Islamabad,Islamabad Capital Territory,Religious,The largest mosque in Pakistan,A famous mosque designed by Turkish architect,Free,24 hours,Evening,mosque islamabad faisal

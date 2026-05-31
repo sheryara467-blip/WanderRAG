@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WanderRAG Admin</title>
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sb-brand">
+        <div class="sb-brand-logo">WR</div>
+        <div>
+          <div class="sb-brand-name">Wander<em>RAG</em></div>
+          <div class="sb-brand-sub">Admin Dashboard</div>
+        </div>
+      </div>
+
+      <nav class="sb-nav">
+        <div class="sb-group-label">Overview</div>
+        <button class="sb-link active" data-section="dashboard"><span class="sb-icon">DB</span><span>Dashboard</span></button>
+        <button class="sb-link" data-section="bookings"><span class="sb-icon">BK</span><span>Bookings</span></button>
+
+        <div class="sb-group-label">Management</div>
+        <button class="sb-link" data-section="places"><span class="sb-icon">PL</span><span>Places</span></button>
+
+        <div class="sb-group-label">Operations</div>
+        <button class="sb-link" data-section="sync"><span class="sb-icon">SY</span><span>Sync to Pinecone</span></button>
+        <button class="sb-link" data-section="data"><span class="sb-icon">CSV</span><span>Import / Export</span></button>
+      </nav>
+
+      <div class="sb-footer">
+        <a class="sb-footer-link" href="/">Tourist View</a>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div id="page-title" class="topbar-title">Dashboard</div>
+        <div class="topbar-right">
+          <div class="admin-status-badge">
+            <span id="status-dot" class="status-dot"></span>
+            <span id="status-txt">Checking system</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="content-area">
+        <section id="sec-dashboard" class="section active">
+          <div class="stats-grid">
+            <div class="stat-card sc-green">
+              <div class="sc-icon">PL</div>
+              <div id="st-places" class="sc-val">-</div>
+              <div class="sc-lbl">Total Places</div>
+              <div class="sc-sub">stored in SQLite</div>
+            </div>
+            <div class="stat-card sc-gold">
+              <div class="sc-icon">BK</div>
+              <div id="st-packages" class="sc-val">-</div>
+              <div class="sc-lbl">Bookings</div>
+              <div class="sc-sub">tour requests</div>
+            </div>
+            <div class="stat-card sc-blue">
+              <div class="sc-icon">VC</div>
+              <div id="st-chunks" class="sc-val">-</div>
+              <div class="sc-lbl">Synced Chunks</div>
+              <div class="sc-sub">Pinecone total</div>
+            </div>
+            <div class="stat-card sc-health">
+              <div id="st-health-icon" class="sc-icon">-</div>
+              <div id="st-health" class="sc-val">Checking</div>
+              <div class="sc-lbl">System Health</div>
+              <div id="st-health-sub" class="sc-sub">DB:- Pinecone:- Embed:-</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hdr"><div class="card-ttl">Quick Actions</div></div>
+            <div class="card-bdy quick-actions-grid">
+              <button class="qa-btn qa-primary" onclick="navTo('places');openModal()">Add Place</button>
+              <button class="qa-btn qa-accent" onclick="navTo('sync');runSync()">Run Sync</button>
+              <button class="qa-btn qa-ghost" onclick="navTo('data')">Import CSV</button>
+              <button class="qa-btn qa-ghost" onclick="doExport()">Export CSV</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hdr">
+              <div class="card-ttl">Places (latest 6)</div>
+              <button class="btn btn-ghost btn-sm" onclick="navTo('places')">View all</button>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>Name</th><th>City</th><th>Category</th><th>Entry Fee</th></tr></thead>
+                <tbody id="dash-tbody"><tr><td colspan="4" class="tbl-loading">Loading...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="sec-bookings" class="section">
+          <div class="card">
+            <div class="card-hdr">
+              <div class="card-ttl">All Bookings</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <select class="toolbar-select" id="bk-status-filter" onchange="filterBookings()" style="font-size:0.78rem">
+                  <option value="">All Statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="cancelled">Cancelled</option>
+                  <option value="completed">Completed</option>
+                </select>
+                <button class="btn btn-ghost btn-sm" onclick="loadBookings()">Refresh</button>
+              </div>
+            </div>
+            <div class="bk-stats-strip">
+              <div class="bks-item bks-pending" id="bkst-pending">0 Pending</div>
+              <div class="bks-item bks-confirmed" id="bkst-confirmed">0 Confirmed</div>
+              <div class="bks-item bks-completed" id="bkst-completed">0 Completed</div>
+              <div class="bks-item bks-cancelled" id="bkst-cancelled">0 Cancelled</div>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Ref ID</th><th>Customer</th><th>Place</th><th>Date</th><th>People</th>
+                    <th>Phone</th><th>Created</th><th>Status</th><th class="th-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="bk-tbody"><tr><td colspan="9" class="tbl-loading">Loading...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="sec-places" class="section">
+          <div class="card">
+            <div class="card-hdr">
+              <div class="card-ttl">All Places</div>
+              <button class="btn btn-primary" onclick="openModal()">Add Place</button>
+            </div>
+            <div class="card-bdy">
+              <div class="places-toolbar">
+                <input id="place-search" class="toolbar-search" type="search" placeholder="Search name, city, description..." oninput="filterPlaces()" />
+                <select id="cat-filter" class="toolbar-select" onchange="filterPlaces()">
+                  <option value="">All Categories</option>
+                  <option value="historical">Historical</option>
+                  <option value="religious">Religious</option>
+                  <option value="nature">Nature</option>
+                  <option value="adventure">Adventure</option>
+                  <option value="garden">Garden</option>
+                  <option value="food">Food</option>
+                  <option value="cultural">Cultural</option>
+                </select>
+              </div>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr><th>Name / ID</th><th>Location</th><th>Category</th><th>Entry Fee</th><th>Updated</th><th class="th-center">Actions</th></tr>
+                </thead>
+                <tbody id="places-tbody"><tr><td colspan="6" class="tbl-loading">Loading...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="sec-sync" class="section">
+          <div class="card">
+            <div class="card-hdr"><div class="card-ttl">Incremental Pinecone Sync</div></div>
+            <div class="card-bdy">
+              <div class="sync-info-box">
+                <div class="sib-title">How sync works</div>
+                <div class="sib-body">
+                  SQLite is the source of truth. The sync service hashes searchable sections,
+                  embeds only added or changed records, skips unchanged records, and deletes removed vectors from Pinecone.
+                </div>
+              </div>
+              <div class="sync-cta">
+                <button id="sync-run-btn" class="btn btn-accent sync-run-btn" onclick="runSync()">Run Incremental Sync</button>
+              </div>
+              <div id="sync-results" class="sync-results hidden">
+                <div class="sync-metrics">
+                  <div class="sm-card sm-added"><div id="sr-added" class="sm-val">0</div><div class="sm-lbl">Added</div></div>
+                  <div class="sm-card sm-updated"><div id="sr-updated" class="sm-val">0</div><div class="sm-lbl">Updated</div></div>
+                  <div class="sm-card sm-deleted"><div id="sr-deleted" class="sm-val">0</div><div class="sm-lbl">Deleted</div></div>
+                  <div class="sm-card sm-skipped"><div id="sr-skipped" class="sm-val">0</div><div class="sm-lbl">Skipped</div></div>
+                  <div class="sm-card sm-total"><div id="sr-total" class="sm-val">0</div><div class="sm-lbl">Pinecone Total</div></div>
+                  <div class="sm-card"><div id="sr-dur" class="sm-val">0s</div><div class="sm-lbl">Duration</div></div>
+                </div>
+                <pre id="sync-log" class="sync-log"></pre>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="sec-data" class="section">
+          <div class="card">
+            <div class="card-hdr"><div class="card-ttl">CSV Import / Export</div></div>
+            <div class="card-bdy data-split">
+              <div>
+                <div id="upload-zone" class="upload-zone" ondragover="onDragOver(event)" ondragleave="onDragLeave()" ondrop="onDrop(event)">
+                  <div class="upload-zone-icon">CSV</div>
+                  <div class="upload-zone-txt"><strong>Drop tourism CSV here</strong><br /><span>or choose a file below</span></div>
+                  <input type="file" accept=".csv" onchange="onFileSelect(event)" />
+                </div>
+                <div id="import-result" class="import-result"></div>
+              </div>
+              <div class="data-info">
+                <h3>Export current SQLite data</h3>
+                <p>Download current places for backup or editing. After importing changes, run sync to update Pinecone.</p>
+                <button class="btn btn-primary" onclick="doExport()">Export CSV</button>
+                <div class="workflow-box"><strong>Workflow:</strong> Import CSV -> SQLite updates -> Run Sync -> Pinecone updates only changed vectors.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div id="modal-overlay" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-hdr">
+        <div id="modal-ttl" class="modal-ttl">Add New Place</div>
+        <button class="modal-close" onclick="closeModal()">x</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="fg"><label class="flbl">Name <span class="req">*</span></label><input id="f-name" class="finput" /></div>
+          <div class="fg"><label class="flbl">City <span class="req">*</span></label><input id="f-city" class="finput" /></div>
+          <div class="fg"><label class="flbl">Province <span class="req">*</span></label><input id="f-province" class="finput" /></div>
+          <div class="fg">
+            <label class="flbl">Category <span class="req">*</span></label>
+            <select id="f-category" class="fselect">
+              <option value="">Select category</option>
+              <option value="historical">Historical</option>
+              <option value="religious">Religious</option>
+              <option value="nature">Nature</option>
+              <option value="adventure">Adventure</option>
+              <option value="garden">Garden</option>
+              <option value="food">Food</option>
+              <option value="cultural">Cultural</option>
+            </select>
+          </div>
+          <div class="form-divider fg-full">Description & History</div>
+          <div class="fg fg-full"><label class="flbl">Description</label><textarea id="f-desc" class="ftextarea"></textarea></div>
+          <div class="fg fg-full"><label class="flbl">History</label><textarea id="f-hist" class="ftextarea"></textarea></div>
+          <div class="fg fg-full"><label class="flbl">Tags</label><input id="f-tags" class="finput" placeholder="fort, mughal, lahore" /><div class="fhint">Comma separated. Used for semantic search.</div></div>
+          <div class="form-divider fg-full">Practical Information</div>
+          <div class="fg"><label class="flbl">Entry Fee</label><input id="f-fee" class="finput" /></div>
+          <div class="fg"><label class="flbl">Opening Hours</label><input id="f-hours" class="finput" /></div>
+          <div class="fg fg-full"><label class="flbl">Best Time To Visit</label><input id="f-best" class="finput" /></div>
+          <div class="form-divider fg-full">Media & Location</div>
+          <div class="fg fg-full"><label class="flbl">Image URL</label><input id="f-img" class="finput" /></div>
+          <div class="fg fg-full"><label class="flbl">Map URL</label><input id="f-map" class="finput" /></div>
+          <div class="fg"><label class="flbl">Latitude</label><input id="f-lat" class="finput" /></div>
+          <div class="fg"><label class="flbl">Longitude</label><input id="f-lng" class="finput" /></div>
+        </div>
+      </div>
+      <div class="modal-ftr">
+        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button id="del-btn" class="btn btn-danger" onclick="deleteFromModal()" style="display:none">Delete</button>
+        <button id="save-btn" class="btn btn-primary" onclick="savePlace()">Save Place</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="/js/admin.js"></script>
+</body>
+</html>
