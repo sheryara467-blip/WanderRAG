@@ -18,6 +18,24 @@ const BOOKING_STEPS = [
   "confirming",
 ];
 
+function getOrCreateSessionId() {
+  let sessionId = localStorage.getItem("wanderrag_session_id");
+
+  if (!sessionId) {
+    sessionId = `sess-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+    localStorage.setItem("wanderrag_session_id", sessionId);
+  }
+
+  return sessionId;
+}
+
+function resetSession() {
+  localStorage.removeItem("wanderrag_session_id");
+  location.reload();
+}
+
+const SESSION_ID = getOrCreateSessionId();
+
 function esc(value) {
   if (value == null) return "";
   return String(value)
@@ -41,6 +59,26 @@ function scrollChat() {
   if (box) box.scrollTop = box.scrollHeight;
 }
 
+function formatApiError(error, status) {
+  const detail = error?.detail;
+
+  if (Array.isArray(detail)) {
+    return detail
+      .map((item) => {
+        const location = Array.isArray(item.loc) ? item.loc.join(".") : "";
+        const message = item.msg || JSON.stringify(item);
+        return location ? `${location}: ${message}` : message;
+      })
+      .join("; ");
+  }
+
+  if (detail && typeof detail === "object") {
+    return JSON.stringify(detail);
+  }
+
+  return detail || error?.message || `HTTP ${status}`;
+}
+
 async function get(path) {
   const response = await fetch(`${API}${path}`);
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -55,8 +93,8 @@ async function post(path, body) {
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ detail: `HTTP ${response.status}` }));
-    throw new Error(error.detail || `HTTP ${response.status}`);
+    const error = await response.json().catch(() => null);
+    throw new Error(formatApiError(error, response.status));
   }
 
   return response.json();
@@ -80,11 +118,34 @@ function showWelcome() {
   );
 }
 
+async function loadChatHistory() {
+  try {
+    const messages = await get(`/api/sessions/${SESSION_ID}/messages`);
+    if (!Array.isArray(messages) || messages.length === 0) return false;
+
+    messages.forEach((message) => {
+      if (message.role === "user") {
+        addUserMessage(message.content);
+      } else {
+        addAssistantMessage(message.content, []);
+      }
+    });
+
+    const suggestions = $("suggestions");
+    if (suggestions) suggestions.style.display = "none";
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function sendMessage(overrideQuery) {
   const input = $("chat-input");
   const query = String(overrideQuery || input.value || "").trim();
   if (!query) return;
 
+  const suggestions = $("suggestions");
+  if (suggestions) suggestions.style.display = "none";
   if (!overrideQuery) input.value = "";
   addUserMessage(query);
 
@@ -93,7 +154,11 @@ async function sendMessage(overrideQuery) {
   const typing = addTypingMessage();
 
   try {
-    const data = await post("/api/chat", { query, top_k: 5 });
+    const data = await post("/api/chat", {
+      query,
+      session_id: SESSION_ID,
+      top_k: 5,
+    });
     typing.remove();
 
     const sources = chooseVisibleSources(query, data.sources || []);
@@ -435,7 +500,9 @@ document.addEventListener("error", (event) => {
 
 document.addEventListener("DOMContentLoaded", () => {
   checkHealth();
-  showWelcome();
+  loadChatHistory().then((hasHistory) => {
+    if (!hasHistory) showWelcome();
+  });
 
   $("chat-form").addEventListener("submit", (event) => {
     event.preventDefault();

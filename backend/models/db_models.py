@@ -153,3 +153,62 @@ class RecordHash(Base):
             f"<RecordHash record_id={self.record_id!r} "
             f"chunk_type={self.chunk_type!r} hash={self.content_hash[:8]!r}...>"
         )
+
+
+# ── Existing imports aur models ke baad add karo ──────────
+
+class ChatSession(Base):
+    """
+    Har user ka ek session hota hai.
+    Session ID frontend se aata hai (localStorage mein store hota hai).
+    """
+    __tablename__ = "chat_sessions"
+
+    id            = Column(String, primary_key=True)   # UUID
+    title         = Column(String, default="New Chat") # pehle message se auto-set
+    created_at    = Column(DateTime(timezone=True), default=_utcnow)
+    updated_at    = Column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow)
+    is_summarized = Column(Integer, default=0)         # 0=no, 1=yes
+    summary       = Column(Text, default="")           # summarized history
+
+
+class ChatMessage(Base):
+    """
+    Har session ke messages store hote hain.
+    role: 'user' ya 'assistant'
+    """
+    __tablename__ = "chat_messages"
+
+    id         = Column(String, primary_key=True)
+    session_id = Column(String, nullable=False, index=True)
+    role       = Column(String, nullable=False)   # 'user' | 'assistant'
+    content    = Column(Text, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=_utcnow)
+
+    # Konse Pinecone sources use hue is answer ke liye
+    sources_json = Column(Text, default="[]")
+
+
+class UserMemory(Base):
+    """
+    Long-term user preferences.
+    Ek session se sikhke store hote hain — agli baar use hote hain.
+
+    Examples:
+      key='destination_interest', value='northern pakistan, mountains'
+      key='travel_budget',        value='medium (PKR 20,000-50,000)'
+      key='travel_style',         value='family with kids'
+      key='preferred_region',     value='Punjab, Gilgit-Baltistan'
+    """
+    __tablename__ = "user_memory"
+
+    id         = Column(String, primary_key=True)
+    session_id = Column(String, nullable=False, index=True)
+    key        = Column(String, nullable=False)
+    value      = Column(Text, nullable=False)
+    confidence = Column(String, default="high")  # high | medium | low
+    updated_at = Column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow)
+
+    __table_args__ = (
+        UniqueConstraint("session_id", "key", name="uq_session_memory_key"),
+    )

@@ -1,21 +1,18 @@
-from fastapi import APIRouter
+from pathlib import Path
+
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
-import os
+
 
 router = APIRouter(tags=["Admin"])
 
+FRONTEND_ADMIN = Path(__file__).resolve().parents[2] / "frontend" / "admin.html"
 
-@router.get("/admin")
+
+@router.get("/admin", include_in_schema=False)
 def serve_admin():
-    """Serve the admin dashboard SPA."""
-    admin_path = os.path.join(os.path.dirname(__file__), "..", "static", "admin.html")
-    admin_path = os.path.normpath(admin_path)
+    """Serve the admin dashboard through the API prefix if requested."""
+    if not FRONTEND_ADMIN.exists():
+        raise HTTPException(status_code=404, detail="frontend/admin.html not found")
 
-    if not os.path.exists(admin_path):
-        from fastapi.responses import JSONResponse
-        return JSONResponse(
-            status_code=404,
-            content={"detail": "admin.html not found in static/"},
-        )
-
-    return FileResponse(admin_path, media_type="text/html")
+    return FileResponse(FRONTEND_ADMIN, media_type="text/html")

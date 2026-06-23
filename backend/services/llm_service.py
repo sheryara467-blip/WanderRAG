@@ -1,9 +1,15 @@
+"""
+llm_service.py — UPDATED with conversation history + memory
+"""
+
 from groq import Groq
+from sqlalchemy.orm import Session
+
 from config import get_settings
 from models.db_models import Place, TourPackage
 
 settings = get_settings()
-_client  = None   # lazy init to avoid loading at import time
+_client: Groq | None = None
 
 
 def _get_client() -> Groq:
@@ -14,10 +20,7 @@ def _get_client() -> Groq:
 
 
 def build_context(places: list[Place], packages: list[TourPackage]) -> str:
-    """
-    Format retrieved DB records into a readable context block for the LLM.
-    The LLM is grounded to this context — it cannot hallucinate places.
-    """
+    """Retrieved tourism records ko context string mein convert karo."""
     parts = []
 
     for p in places:
@@ -43,27 +46,58 @@ def build_context(places: list[Place], packages: list[TourPackage]) -> str:
     return "\n\n".join(parts) if parts else "No relevant tourism information found."
 
 
-def generate_answer(query: str, context: str) -> str:
+def generate_answer(
+    query:          str,
+    context:        str,
+    chat_history:   list[dict] = None,    # Short-term memory
+    memory_context: str        = "",       # Long-term memory
+) -> str:
     """
-    Call Groq LLM with the retrieved context and user query.
-    The system prompt strictly grounds the model to the provided context.
+    Groq LLM se answer generate karo.
+
+    Prompt structure:
+    ┌─────────────────────────────────────────────┐
+    │ SYSTEM                                      │
+    │   - WanderRAG ka role                       │
+    │   - User preferences (long-term memory)     │
+    │   - Retrieved tourism context               │
+    ├─────────────────────────────────────────────┤
+    │ MESSAGES (short-term memory)                │
+    │   - Previous conversation turns             │
+    │   - Current user query                      │
+    └─────────────────────────────────────────────┘
     """
+
+    # System prompt mein tourism context + user memory dono inject karo
     system_prompt = (
-        "You are WanderRAG, a friendly and knowledgeable Pakistan tourism assistant. "
-        "Answer the user's question using ONLY the tourism information provided below. "
-        "If the information isn't in the context, say so honestly — do not invent places or facts. "
-        "Be warm, helpful, and concise. Use bullet points where appropriate.\n\n"
-        f"TOURISM CONTEXT:\n{context}"
+        "You are WanderRAG, a friendly Pakistan tourism AI assistant.\n"
+        "Answer using ONLY the tourism context provided. "
+        "If information is not in the context, say so honestly.\n"
+        "Be warm, concise, and helpful. Use bullet points when listing places.\n"
     )
+
+    # Long-term memory add karo (agar hai)
+    if memory_context:
+        system_prompt += f"\n{memory_context}\n"
+
+    # Tourism context add karo
+    system_prompt += f"\nTOURISM CONTEXT:\n{context}"
+
+    # Messages build karo
+    messages = [{"role": "system", "content": system_prompt}]
+
+    # Short-term history add karo (last 6 messages)
+    if chat_history:
+        messages.extend(chat_history)
+
+    # Current query add karo
+    messages.append({"role": "user", "content": query})
 
     client   = _get_client()
     response = client.chat.completions.create(
-        model    = settings.groq_model,
-        messages = [
-            {"role": "system",  "content": system_prompt},
-            {"role": "user",    "content": query},
-        ],
-        temperature = 0.3,   # low temperature = factual, consistent answers
+        model       = settings.groq_model,
+        messages    = messages,
+        temperature = 0.3,
         max_tokens  = 1024,
     )
 

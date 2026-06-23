@@ -24,7 +24,9 @@ from routes.chat_routes   import router as chat_router
 from routes.places_routes import router as places_router
 from routes.sync_routes   import router as sync_router
 from routes.admin_routes  import router as admin_router
+from routes.memory_routes import router as memory_router
 from routes.booking_routes import router as booking_router
+from routes.import_export_routes import router as import_export_router
 settings = get_settings()
 
 # ---------------------------------------------------------------------------
@@ -97,7 +99,9 @@ app.include_router(chat_router,   prefix="/api")
 app.include_router(places_router, prefix="/api")
 app.include_router(sync_router,   prefix="/api")
 app.include_router(admin_router,  prefix="/api")
+app.include_router(memory_router, prefix="/api")
 app.include_router(booking_router, prefix="/api")
+app.include_router(import_export_router, prefix="/api")
 # ---------------------------------------------------------------------------
 # Explicit HTML page routes
 # These are registered BEFORE the static mount so they take priority
