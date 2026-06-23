@@ -541,3 +541,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+
+function startNewChat() {
+    // Confirm karo pehle
+    if (!confirm("Start a new conversation? Current chat will be saved.")) return;
+
+    // Old session ID hata do
+    localStorage.removeItem("wanderrag_session_id");
+
+    // Page reload — naya session_id automatically banega
+    location.reload();
+}
